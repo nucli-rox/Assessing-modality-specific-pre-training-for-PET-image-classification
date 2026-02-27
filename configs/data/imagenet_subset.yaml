@@ -1,0 +1,26 @@
+data_root: ""
+input_size: 224
+imagenet_default_mean_and_std: true
+fixed_post_norm_shift: 1.860
+
+train_subset_size: 14000
+val_subset_size: null
+subset_per_class: true
+subset_seed: 42
+subset_num_classes: 100
+subset_class_seed: 42
+
+
+# Use when not using an explicit "val" folder in data_root 
+split_from_train: true
+val_split: 0.1
+split_seed: 42
+
+train:
+  batch_size: 64
+  num_workers: 4
+
+val:
+  batch_size: 64
+  num_workers: 4
+  global_eval_interval: 1

@@ -1,0 +1,25 @@
+data_root: ""
+
+nb_MIPs: 4
+patch_size: [224, 224] 
+transforms: 
+  - "rotate"
+  - "flip"
+centers_excluded: null
+
+train:
+  batch_size: 64
+  num_workers: 4
+
+val:
+  batch_size: 64
+  num_workers: 4
+  global_eval_interval: 1
+
+split:
+  val_ratio: 0.1
+  seed: 42
+  stratify: true
+
+
+scans_excluded: null

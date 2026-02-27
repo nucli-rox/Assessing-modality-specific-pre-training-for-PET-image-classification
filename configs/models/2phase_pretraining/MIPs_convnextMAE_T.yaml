@@ -1,0 +1,29 @@
+model:
+  name: MAE
+  args:
+    patch_size: 32
+    intensitylog: true
+    prepretrain: "IN"
+    network:
+      name: sparseconvnext_2d
+      args:
+        prepretrained_ckpt: ""
+        encoder_block: SparseResBlock2D
+        decoder_block: convnextv2-block-2d
+        patch_size: 32
+        depths: [3,3,9,3]
+        dims: [96, 192, 384, 768]
+        drop_path_rate: 0.0
+        head_init_scale: 1.0
+        in_chans: 3
+        decoder_embed_dim: 512
+        decoder_depth: 1
+        lr: 3e-4
+        learnable_mask_token: false
+        reconstruct: false
+        mask_ratio: 0.7
+        reweighted: true
+      optimizers:
+        name: adam
+        args:
+          lr: 0.00005
