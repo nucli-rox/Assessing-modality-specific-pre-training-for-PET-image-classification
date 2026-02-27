@@ -182,9 +182,46 @@ def instantiate_transform(spec):
     return cls(**spec)
 
 
+def _resolve_existing_path(path_value, setup_path=None):
+    p = Path(str(path_value)).expanduser()
+    if p.is_absolute() and p.exists():
+        return p
+
+    anchors = []
+    if setup_path is not None:
+        anchors.append(setup_path.parent)
+    anchors.extend([Path.cwd(), repo_root, Path(__file__).resolve().parent])
+
+    tried = []
+    for base in anchors:
+        candidate = (base / p).resolve()
+        tried.append(candidate)
+        if candidate.exists():
+            return candidate
+
+    if not p.is_absolute():
+        cfg_root = repo_root / "configs"
+        if cfg_root.exists():
+            matches = list(cfg_root.rglob(p.name))
+            if len(matches) == 1:
+                return matches[0].resolve()
+
+    raise FileNotFoundError(
+        f"Could not resolve path: {path_value}. Tried: "
+        + ", ".join(str(x) for x in tried)
+    )
+
+
 def load_configs(args):
-    setup = yaml.safe_load(open(args.setup_config))
-    transforms_cfg = yaml.safe_load(open(setup["transforms_config"]))
+    setup_path = _resolve_existing_path(args.setup_config)
+    with open(setup_path, "r") as f:
+        setup = yaml.safe_load(f)
+
+    transforms_path = _resolve_existing_path(
+        setup["transforms_config"], setup_path=setup_path
+    )
+    with open(transforms_path, "r") as f:
+        transforms_cfg = yaml.safe_load(f)
     return setup, transforms_cfg
 
 

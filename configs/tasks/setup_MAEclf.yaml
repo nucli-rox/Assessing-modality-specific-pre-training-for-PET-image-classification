@@ -1,0 +1,72 @@
+data:
+  path_to_dataset: 
+  nb_MIPs: 4
+  scans_excluded: null
+  centers_excluded: null
+
+transforms_config: ../configs/tasks/MIP-transforms.yaml
+
+cache_dir: "./cache_resnet_original"
+
+split:
+  val_ratio: 0.1
+  stratify: true
+  seed: 42
+
+dataloader:
+  batch_size: 32
+  num_workers: 1
+  pin_memory: true
+  weighted_sampler:
+    enabled: false
+    replacement: false
+
+training:
+  criterion:
+    _target_: torch.nn.CrossEntropyLoss 
+  optimizer:
+    type: adam
+    lr: 1e-4
+    weight_decay: 0.01
+  scheduler:
+    type: sequential
+    cold:
+      type: linear # constant or linear
+      factor: 0.01
+      total_iters: 5
+    main:
+      type: step # step or cosineannealing
+      step_size: 10
+      gamma: 0.8
+      min_lr: 1e-6
+  save_dir: "../checkpoints/classifier_PET"
+
+model:
+  name: classifier_MAE
+  args:
+    network:
+      name: sparseconvnext_2d
+      args:
+        encoder_block: SparseResBlock2D
+        decoder_block: convnextv2-block-2d
+        patch_size: 32
+        depths: [3, 3, 9, 3]
+        dims: [96, 192, 384, 768]
+        drop_path_rate: 0.0
+        head_init_scale: 1.0
+        in_chans: 1
+        decoder_embed_dim: 384
+        decoder_depth: 1
+        lr: 3e-4
+        learnable_mask_token: false
+        sparse: false
+      optimizers:
+        name: adam
+        args:
+            lr: 0.0001
+  model_args:
+    pretrain_source: "mae"   # "mae" (local checkpoint) or "timm" (official ConvNeXtV2 weights)
+    timm_backbone: "convnextv2_tiny.fcmae_ft_in1k"
+    backbone: ""     
+    linearprobe: true
+    block_training_budget: 1

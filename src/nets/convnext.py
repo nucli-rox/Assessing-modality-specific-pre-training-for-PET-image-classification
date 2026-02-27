@@ -73,18 +73,36 @@ class SparseConvNeXt_2d(nn.Module):
         self.prepretrained_ckpt = prepretrained_ckpt
         self.lr = float(kwargs.get("lr", math.sqrt(1 / 16) * 1e-4))
         self.weight_decay = float(kwargs.get("weight_decay", 0.0))
+
+        def _make_downsample_conv(cin, cout, kernel_size, stride):
+            if self.sparse:
+                return SparseConv2dReweighted(
+                    cin, cout, kernel_size=kernel_size, stride=stride
+                )
+            return nn.Conv2d(cin, cout, kernel_size=kernel_size, stride=stride)
+
+        def _make_downsample_norm(dim):
+            return SparseConvNeXtLayerNorm(
+                dim,
+                eps=1e-6,
+                data_format="channels_first",
+                sparse=self.sparse,
+            )
+
         self.downsample_layers = (
             nn.ModuleList()
         )  # stem and 3 intermediate downsampling conv layers
         stem = nn.Sequential(
-            SparseConv2dReweighted(in_chans, self.dims[0], kernel_size=4, stride=4),
-            SparseConvNeXtLayerNorm(self.dims[0], eps=1e-6, data_format="channels_first"),
+            _make_downsample_conv(in_chans, self.dims[0], kernel_size=4, stride=4),
+            _make_downsample_norm(self.dims[0]),
         )
         self.downsample_layers.append(stem)
         for i in range(len(self.dims) - 1):
             downsample_layer = nn.Sequential(
-                SparseConvNeXtLayerNorm(self.dims[i], eps=1e-6, data_format="channels_first"),
-                SparseConv2dReweighted(self.dims[i], self.dims[i + 1], kernel_size=2, stride=2),
+                _make_downsample_norm(self.dims[i]),
+                _make_downsample_conv(
+                    self.dims[i], self.dims[i + 1], kernel_size=2, stride=2
+                ),
             )
             self.downsample_layers.append(downsample_layer)
         self.stages = (

@@ -39,17 +39,7 @@ def main():
         type=str,
         default="ConvNeXt benchmark",
     )
-    runs = [
-        "../../configs/tasks/tiny_clf.yaml",
-        "../../configs/tasks/tiny_LOO_brest.yaml",
-        "../../configs/tasks/tiny_LOO_chul.yaml",
-        "../../configs/tasks/PPT_IN/tiny_clf.yaml",
-        "../../configs/tasks/PPT_IN/tiny_LOO_angers.yaml",
-        "../../configs/tasks/PPT_IN/tiny_LOO_brest.yaml",
-        "../../configs/tasks/PPT_IN/tiny_LOO_chul.yaml",
-        # ("../configs/mip_setup_mip8.yaml"),
-        # ("../configs/mip_setup_mip16.yaml"),
-    ]
+    runs = None
     args = parser.parse_args()
     effective_runs = runs or [args.setup_config]
     for setup_cfg in effective_runs:
