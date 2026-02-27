@@ -1,12 +1,23 @@
-# Python/cache
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.cache/
+# Ignore everything by default
+*
 
-# Tooling/build caches
-.ipynb_checkpoints/
-dist/
-build/
+# Keep directory traversal for allowlisted files
+!*/
+
+# Keep Python scripts
+!*.py
+
+# Keep config YAML files only
+!configs/
+!configs/**/*.yml
+!configs/**/*.yaml
+
+# Keep repo metadata/docs requested
+!README.md
+!.gitignore
+
+# Ignore experiment tracking artifacts
+wandb/
+.wandb/
+mlruns/
+mlartifacts/

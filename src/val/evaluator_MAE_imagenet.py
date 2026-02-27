@@ -60,9 +60,9 @@ class MAEevaluator:
             "feats": model_output["feats"],
         }
 
-    def to_img(self, x, robust=False):  # x: C,H,W
+    def to_img(self, x, robust=False):
         x = x.detach().cpu()
-        # Undo fixed post-normalization shift first, then unnormalize.
+       
         x = (x - self.fixed_post_norm_shift) * self.std + self.mean
         if robust:
             flat = x.flatten()

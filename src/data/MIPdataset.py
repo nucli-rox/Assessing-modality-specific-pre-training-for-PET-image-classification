@@ -52,7 +52,7 @@ class MIPDataset(Dataset):
             vol_shape = vol_img.shape
             vol_ndim = len(vol_shape)
 
-            num_entries = vol_shape[0] if vol_ndim == 3 else 1
+            num_entries = vol_shape[self.slice_axis] if vol_ndim == 3 else 1
             indices = list(range(num_entries))
             for mip_idx in indices:
                 self.mip_entries.append((rec, int(mip_idx)))
@@ -75,6 +75,23 @@ class MIPDataset(Dataset):
             else:
                 arr = np.asarray(vol_obj[:], dtype=np.float32)
             arr = np.array(arr, dtype=np.float32, copy=True)
+            mip = torch.from_numpy(arr).float().unsqueeze(0)
+        elif vol_ndim == 3:
+            if backend == "nifti":
+                arr3d = np.asarray(vol_obj.dataobj, dtype=np.float32)
+            else:
+                arr3d = np.asarray(vol_obj[:], dtype=np.float32)
+            arr3d = np.array(arr3d, dtype=np.float32, copy=True)
+
+            if self.slice_axis == 0:
+                arr = arr3d[mip_idx, :, :]
+            elif self.slice_axis == 1:
+                arr = arr3d[:, mip_idx, :]
+            elif self.slice_axis == 2:
+                arr = arr3d[:, :, mip_idx]
+            else:
+                raise ValueError(f"Unsupported slice_axis={self.slice_axis}. Expected 0, 1 or 2.")
+
             mip = torch.from_numpy(arr).float().unsqueeze(0)
         else:
             raise ValueError(f"Unsupported shape {vol_shape} for record {rec['image']}")

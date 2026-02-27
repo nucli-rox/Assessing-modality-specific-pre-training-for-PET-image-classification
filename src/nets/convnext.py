@@ -26,6 +26,7 @@ from nucli_train.nets.builders import (
 )
 import math
 from nucli_train.nets.conv_blocks import CONV_BLOCKS_REGISTRY
+import src.nets.conv_blocks.convblocks  
 
 class SparseConvNeXt_2d(nn.Module):
     r"""ConvNeXt
@@ -70,6 +71,8 @@ class SparseConvNeXt_2d(nn.Module):
         self.sparse = sparse
         self.reweighted = reweighted
         self.prepretrained_ckpt = prepretrained_ckpt
+        self.lr = float(kwargs.get("lr", math.sqrt(1 / 16) * 1e-4))
+        self.weight_decay = float(kwargs.get("weight_decay", 0.0))
         self.downsample_layers = (
             nn.ModuleList()
         )  # stem and 3 intermediate downsampling conv layers
@@ -168,11 +171,13 @@ class SparseConvNeXt_2d(nn.Module):
         self.opt = OPTIMIZERS[opt_name](self.parameters(), **opt_args)
 
     def get_optimizer(self):
-        k = 1 / 16
-        optimizer = torch.optim.Adam(
-            filter(lambda p: p.requires_grad, self.parameters()), lr=math.sqrt(k) * 1e-4
+        if self.opt is not None:
+            return self.opt
+        return torch.optim.Adam(
+            filter(lambda p: p.requires_grad, self.parameters()),
+            lr=self.lr,
+            weight_decay=self.weight_decay,
         )
-        return optimizer
 
     def _init_weights(self, m):
         if isinstance(m, (nn.Conv2d, nn.Linear)):
@@ -222,18 +227,14 @@ class SparseConvNeXt_2d(nn.Module):
         mask_dec = mask.clone()
 
         self.original_shape = list(x.shape)
-        # print(f"Stage 0, shape {x.shape}")
         for i in range(self.num_stages):
             x = self.downsample_layers[i](x) if i > 0 else x
             x = self.stages[i](x)
-            print("mean of x during stage", i, ":", x.mean())
 
             if i > 0:
-                ### We update the shape
                 self.original_shape[1] = self.dims[i]
                 self.original_shape[2] = self.original_shape[2] // 2
                 self.original_shape[3] = self.original_shape[3] // 2
-            # print(f"Stage {i}, shape {x.shape}")
         feats = x.clone()
         x = self.forward_decoder(x, mask_dec)
 
@@ -243,4 +244,3 @@ class SparseConvNeXt_2d(nn.Module):
 def sparseconvnext_2d(**args_cfg):
     model = SparseConvNeXt_2d(**args_cfg)
     return model
-

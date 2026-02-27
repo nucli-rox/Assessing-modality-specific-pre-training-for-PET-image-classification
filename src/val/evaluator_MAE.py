@@ -5,14 +5,6 @@ import mlflow
 import numpy as np
 
 import matplotlib.pyplot as plt
-
-import skimage.metrics as skim
-
-import pandas as pd
-
-import os
-
-from os.path import exists
 import torch
 
 
@@ -50,7 +42,7 @@ class MAEevaluator:
         originals = self._invert_preprocess(self.output["original"])
         recon = self.output["preds"] * mask + preds * (
             1 - mask
-        )  # originals * mask + preds * (1 - mask)
+        )  
         patient_id = self.output["patient_id"]
         feats = self.output["feats"]
         num_rows = min(preds.shape[0], len(patient_id), 5)
