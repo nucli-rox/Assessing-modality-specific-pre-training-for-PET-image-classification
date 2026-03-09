@@ -84,7 +84,6 @@ The code imports at least:
 - `nibabel`
 - `pyyaml`
 - `matplotlib`
-- `nucli_train` (required by training entrypoints)
 
 Example installation (adapt to your CUDA/PyTorch setup):
 
@@ -92,7 +91,6 @@ Example installation (adapt to your CUDA/PyTorch setup):
 pip install torch torchvision monai timm mlflow wandb scikit-learn nibabel pandas pyyaml matplotlib
 ```
 
-`nucli_train` must also be installed/available in your environment.
 
 ## Data Format Expectations
 
