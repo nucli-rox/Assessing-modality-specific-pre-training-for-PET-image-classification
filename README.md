@@ -31,65 +31,15 @@ Reported AUROC summary (from manuscript):
 | IN1 + PET | 28,000 | 0.66 [0.57,0.75] | 0.74 [0.66,0.81] | 0.90 [0.84,0.95] | 0.96 [0.93,0.99] |
 | IN1 + IN2 | 28,000 | 0.56 [0.47,0.66] | 0.67 [0.58,0.75] | 0.88 [0.82,0.93] | 0.96 [0.93,0.98] |
 
-## Repository Structure
 
-```text
-configs/
-  data/
-    mip_data.yaml
-    imagenet_subset.yaml
-  models/
-    MIP_pretraining/convnextMAE_T.yaml
-    IN_pretraining/convnextMAE_T.yaml
-    2phase_pretraining/
-      MIPs_convnextMAE_T.yaml
-      IN_convnextMAE_T.yaml
-  tasks/
-    setup_MAEclf.yaml
-    MIP-transforms.yaml
+## Installation
 
-scripts/MAE/
-  run_mae_convnext.py              # PET MAE pre-training
-  run_mae_convnext_imagenet.py     # ImageNet MAE pre-training
-  run_inf_mae.py                   # MAE reconstruction visualization
+Run `pip install -r requirements.txt`. Use a Python environment with Python 3.10 or newer. Our setup uses Python 3.11, but any version ≥ 3.10 is likely to work.
 
-tasks/scripts/
-  train_clf.py                     # downstream classifier training (MLflow)
-  train_clf_WANDB.py               # downstream classifier training (W&B)
-  run_clf.py                       # wrapper for train_clf_WANDB
+No separate package installation is required. The provided scripts are designed to run directly from the cloned repository and handle access to the src/ code at runtime.
 
-src/
-  data/
-  models/
-  nets/
-  inference/
-```
 
-## Environment and Dependencies
 
-### Python
-
-- Recommended: Python 3.10+
-
-### Required packages
-
-The code imports at least:
-
-- `torch`, `torchvision`
-- `monai`
-- `timm`
-- `mlflow`
-- `wandb` (for the W&B training script)
-- `numpy`, `pandas`, `scikit-learn`
-- `nibabel`
-- `pyyaml`
-- `matplotlib`
-
-Example installation (adapt to your CUDA/PyTorch setup):
-
-```bash
-pip install torch torchvision monai timm mlflow wandb scikit-learn nibabel pandas pyyaml matplotlib
-```
 
 
 ## Data Format Expectations
