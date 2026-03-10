@@ -34,8 +34,8 @@ import monai.utils as monai_utils
 import monai.utils.misc as monai_misc
 from monai.transforms.transform import Randomizable
 
-from nucli_train.models.builders import build_model as nucli_build_model
-from src.models.factory import build_local_model
+
+from src.models.factory import build_model
 
 FIXED_MAX = int(np.iinfo(np.uint32).max)  # 4294967295
 
@@ -103,7 +103,9 @@ def _resolve_label(file_path: Path, patient_id: str, center: str, data_cfg):
     )
 
 
-def create_dataframe(path_to_dataset=None, scans_excluded=None, centers_excluded=None, data_cfg=None):
+def create_dataframe(
+    path_to_dataset=None, scans_excluded=None, centers_excluded=None, data_cfg=None
+):
     root_dir = Path(path_to_dataset)
     scans_excluded = set(scans_excluded or [])
     centers_excluded = set(centers_excluded or [])
@@ -227,14 +229,6 @@ def load_configs(args):
     return setup, transforms_cfg
 
 
-def build_model(model_cfg, device):
-    try:
-        model = build_local_model(model_cfg)
-    except ValueError:
-        model = nucli_build_model(model_cfg)
-    return model.to(device)
-
-
 def build_optimizer_and_scheduler(model, train_cfg, epochs):
     criterion = instantiate_transform(train_cfg["criterion"])
 
@@ -345,7 +339,11 @@ def main(args):
     cv_fold = getattr(args, "cv_fold", None)
 
     if cv_enabled:
-        y = strat_labels if split_cfg.get("stratify", True) else [r["Label"] for r in records]
+        y = (
+            strat_labels
+            if split_cfg.get("stratify", True)
+            else [r["Label"] for r in records]
+        )
         splitter = StratifiedKFold(
             n_splits=n_splits,
             shuffle=True,
@@ -454,7 +452,7 @@ def main(args):
         )
 
         try:
-            model = build_model(model_cfg, device)
+            model = build_model(model_cfg).to(device)
         except Exception as e:
             print("\n--- ERROR WHILE CONSTRUCTING MODEL ---")
             print("Error:", e)
@@ -465,11 +463,7 @@ def main(args):
             model, train_cfg, args.epochs
         )
 
-        run_name = (
-            f"{base_run_name}_fold{fold_id:02d}"
-            if cv_enabled
-            else base_run_name
-        )
+        run_name = f"{base_run_name}_fold{fold_id:02d}" if cv_enabled else base_run_name
         run = wandb.init(
             project=args.experiment_name or "MAE-classifier",
             name=run_name,
@@ -592,7 +586,9 @@ def main(args):
     if fold_summaries:
         summary_df = pd.DataFrame(fold_summaries)
         summary_path = metrics_dir / (
-            f"{base_run_name}_cv_summary.csv" if cv_enabled else f"{base_run_name}_summary.csv"
+            f"{base_run_name}_cv_summary.csv"
+            if cv_enabled
+            else f"{base_run_name}_summary.csv"
         )
         summary_df.to_csv(summary_path, index=False)
         print("Saved summary to", summary_path)

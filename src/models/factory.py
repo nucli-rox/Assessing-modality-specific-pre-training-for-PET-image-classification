@@ -1,4 +1,4 @@
-def build_local_model(model_cfg):
+def build_model(model_cfg):
     name = model_cfg.get("name")
 
     if name == "MAE":
@@ -13,9 +13,5 @@ def build_local_model(model_cfg):
         from tasks.models.convnext_MAE_clf import build_classifier_mae
 
         return build_classifier_mae(model_cfg)
-    if name == "resnet_scratch":
-        from tasks.models.resnet_clf import build_resnet_scratch
 
-        return build_resnet_scratch(model_cfg)
-
-    raise ValueError(f"Unsupported local model name: {name}")
+    raise ValueError(f"Unsupported model name: {name}")

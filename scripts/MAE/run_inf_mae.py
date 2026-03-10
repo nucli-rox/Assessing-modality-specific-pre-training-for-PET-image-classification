@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import argparse
 import random
 from pathlib import Path
@@ -13,8 +12,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-import src.models.MAE  
-from src.models.factory import build_local_model
+import src.models.MAE
+from src.models.factory import build_model
 
 
 def set_random_seed(seed: int) -> None:
@@ -32,7 +31,7 @@ def load_model(model_cfg_path: str, ckpt_path: str) -> torch.nn.Module:
     cfg = yaml.safe_load(open(model_cfg_path))
     model_cfg = cfg["model"] if "model" in cfg else cfg
 
-    model = build_local_model(model_cfg)
+    model = build_model(model_cfg)
 
     moved = model.cuda()
     if moved is not None:

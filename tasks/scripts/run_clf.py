@@ -6,19 +6,12 @@ import train_clf_WANDB as trainer
 import argparse
 
 from nucli_train.models.builders import build_model, MODEL_REGISTRY
-from nucli_train.training import Trainer
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]  # repo root above scripts/
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
-
-from src.data.MIPdataset import build_mip_data
-import tasks.models.convnext_MAE_clf
-import tasks.models.resnet_clf
-import src.nets.convnext
-from src.val import evaluator_MAE
 
 
 # recreate the parser

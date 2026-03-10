@@ -1,13 +1,15 @@
-import torch
-import pandas as pd
-from torch.utils.data import DataLoader
 import sys
 from pathlib import Path
 import yaml
+import pandas as pd
+import nibabel as nib
+import numpy as np
+import torch
+from torch.utils.data import DataLoader, Dataset
 
 sys.path.insert(0, str(Path.cwd().parent))  # point to repo root
 
-from src.models.factory import build_local_model
+from src.models.factory import build_model
 
 from monai.transforms import (
     Compose,
@@ -56,7 +58,7 @@ def run_inference(setup_cfg_path, checkpoint_path, test_csv):
 
     # Load model + weights
     model_cfg = setup["model"]
-    model = build_local_model(model_cfg).to(device)
+    model = build_model(model_cfg).to(device)
     print("checkpoint path:", checkpoint_path)
     ckpt = torch.load(checkpoint_path, map_location=device)
     print("keys of ckpt:", ckpt.keys())
@@ -104,7 +106,7 @@ def run_mae_inference(setup_cfg_path, checkpoint_path, test_csv):
 
     # Load model + weights
     model_cfg = setup["model"]
-    model = build_local_model(model_cfg).to(device)
+    model = build_model(model_cfg).to(device)
     print("checkpoint path:", checkpoint_path)
     ckpt = torch.load(checkpoint_path, map_location=device)
     state = ckpt["model_state"] if "model_state" in ckpt else ckpt
@@ -206,21 +208,12 @@ def mae_inference_step(model, batch, mask_ratio=None):
             preds_eval.shape,
         )
 
-    # img_pred = model.unpatchify(preds)
-    # print("shape preds:", preds.shape, "img pred shape:", img_pred.shape)
     return {
         "input": input_data,
         "preds": preds_eval,
         "mask": mask,
         "patch_mask_long": patch_mask_long,
     }
-
-
-from torch.utils.data import Dataset, DataLoader
-import nibabel as nib
-import numpy as np
-import torch
-from torch.utils.data import Dataset
 
 
 class NiftiDataset(Dataset):
