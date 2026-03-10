@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import copy
-from typing import Type
 
-import torch
 import torch.nn as nn
-import torch.nn.functional as F
+
 
 from .utils import GRN
 from pathlib import Path
@@ -15,7 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from timm.models.layers import trunc_normal_, DropPath
+from timm.models.layers import DropPath
+
 
 class ConvNeXtV2Block2D(nn.Module):
     """

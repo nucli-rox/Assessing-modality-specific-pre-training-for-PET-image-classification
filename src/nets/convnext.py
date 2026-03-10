@@ -8,8 +8,7 @@
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from timm.models.layers import trunc_normal_, DropPath
+from timm.models.layers import trunc_normal_
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]  # repo root above scripts/
@@ -33,6 +32,7 @@ CONV_BLOCKS = {
     "SparseResBlock2D": SparseConvNeXtBlock,
 }
 
+
 class SparseConvNeXt_2d(nn.Module):
     r"""ConvNeXt
         A PyTorch impl of : `A ConvNet for the 2020s`  -
@@ -45,7 +45,6 @@ class SparseConvNeXt_2d(nn.Module):
         dims (int): Feature dimension at each stage. Default: [96, 192, 384, 768]
         drop_path_rate (float): Stochastic depth rate. Default: 0.
         layer_scale_init_value (float): Init value for Layer Scale. Default: 1e-6.
-        head_init_scale (float): Init scaling value for classifier weights and biases. Default: 1.
     """
 
     def __init__(
@@ -57,7 +56,6 @@ class SparseConvNeXt_2d(nn.Module):
         dims=[96, 192, 192, 384],
         drop_path_rate=0.0,
         layer_scale_init_value=1e-6,
-        head_init_scale=1.0,
         decoder_embed_dim=512,
         decoder_depth=1,
         learnable_mask_token=None,
@@ -266,6 +264,7 @@ class SparseConvNeXt_2d(nn.Module):
         x = self.forward_decoder(x, mask_dec)
 
         return x, feats
+
 
 def sparseconvnext_2d(**args_cfg):
     model = SparseConvNeXt_2d(**args_cfg)

@@ -2,16 +2,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path.cwd().parent))  # point to repo root
-print(sys.path)
 import train_clf_WANDB as trainer
 import argparse
 
 from nucli_train.models.builders import build_model, MODEL_REGISTRY
 from nucli_train.training import Trainer
-import mlflow
 import sys
 from pathlib import Path
-import yaml
 
 ROOT = Path(__file__).resolve().parents[2]  # repo root above scripts/
 if str(ROOT) not in sys.path:

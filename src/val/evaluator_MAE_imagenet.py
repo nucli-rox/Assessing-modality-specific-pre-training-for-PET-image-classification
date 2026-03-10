@@ -1,6 +1,5 @@
 import mlflow
 
-import numpy as np
 
 import matplotlib
 
@@ -10,15 +9,7 @@ matplotlib.use(
 
 import matplotlib.pyplot as plt
 
-import skimage.metrics as skim
 
-import pandas as pd
-
-import os
-
-from os.path import exists
-
-from pathlib import Path
 import torch
 from timm.data.constants import (
     IMAGENET_DEFAULT_MEAN,
@@ -62,7 +53,7 @@ class MAEevaluator:
 
     def to_img(self, x, robust=False):
         x = x.detach().cpu()
-       
+
         x = (x - self.fixed_post_norm_shift) * self.std + self.mean
         if robust:
             flat = x.flatten()

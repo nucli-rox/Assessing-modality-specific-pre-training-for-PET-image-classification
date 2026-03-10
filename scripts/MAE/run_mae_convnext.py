@@ -1,6 +1,3 @@
-print("Loading MAE preprocessor...")
-print("Importing necessary modules...")
-
 from nucli_train.models.builders import build_model
 from nucli_train.training import Trainer
 import mlflow
@@ -9,7 +6,7 @@ from pathlib import Path
 import yaml
 import argparse
 
-ROOT = Path(__file__).resolve().parents[2] 
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
@@ -51,7 +48,9 @@ with open(model_cfg, "r") as f:
     model_cfg_dict = yaml.safe_load(f)
 
 print("Build model")
-model_cfg_local = model_cfg_dict["model"] if "model" in model_cfg_dict else model_cfg_dict
+model_cfg_local = (
+    model_cfg_dict["model"] if "model" in model_cfg_dict else model_cfg_dict
+)
 try:
     model = build_local_model(model_cfg_local)
 except ValueError:

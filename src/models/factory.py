@@ -1,6 +1,3 @@
-from __future__ import annotations
-
-
 def build_local_model(model_cfg):
     name = model_cfg.get("name")
 

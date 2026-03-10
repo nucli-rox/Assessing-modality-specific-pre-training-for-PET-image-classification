@@ -1,9 +1,3 @@
-from __future__ import annotations
-
-
-print("Loading MAE preprocessor...")
-print("Importing necessary modules...")
-
 from pathlib import Path
 import sys
 
@@ -11,16 +5,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from nucli_train.models.builders import build_model
 from nucli_train.models.image_translation import ImageTranslationModel
 import src.sparse.sparse_transform as sparse_ops
 
 import torch
 import torch.nn as nn
 
-# from nucli_train.nets import build_network
-from nucli_train.models.losses import build_losses
-import src.nets.convnext
+
 from src.nets.convnext import build_network_from_cfg
 
 torch.set_printoptions(threshold=torch.inf)  # no truncation
@@ -207,7 +198,9 @@ class MIM(ImageTranslationModel):
         h_dec = input_data.shape[-1] // self.downsample_ratio
         scale_h = h_mask // h_dec
         mask_dec = self.downsample_mask(mask, scale_h)
-        preds, feats = self.base_network.forward(x, mask_dec)  # , hierarchical=True)[-1]
+        preds, feats = self.base_network.forward(
+            x, mask_dec
+        )  # , hierarchical=True)[-1]
         targets = input_data  # x_stem
         losses = self.forward_loss(targets, preds, patch_mask_long)
         return losses
@@ -245,7 +238,9 @@ class MIM(ImageTranslationModel):
             )  # x.shape[-2], x.shape[-1]  # 6, 8 after encoder
             scale_h = h_mask // h_dec
             mask_dec = self.downsample_mask(mask, scale_h)
-            preds, feats = self.base_network.forward(x, mask_dec)  # , hierarchical=True)[-1]
+            preds, feats = self.base_network.forward(
+                x, mask_dec
+            )  # , hierarchical=True)[-1]
             losses = self.forward_loss(input_data, preds, patch_mask_long)
             ##################### EVALUATION  ######################
             B, _, H, W = preds.shape  # e.g., 6, 1024, 6, 6

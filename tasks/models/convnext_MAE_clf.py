@@ -3,7 +3,6 @@ import torch.nn as nn
 import timm
 import sys
 from pathlib import Path
-import os
 
 repo_root = Path(__file__).resolve().parents[2]
 if str(repo_root) not in sys.path:
@@ -16,8 +15,6 @@ from src.nets.convnext import build_network_from_cfg
 
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root / "src"))
-import matplotlib.pyplot as plt
-import numpy as np
 from timm.layers import NormMlpClassifierHead
 
 
@@ -133,7 +130,13 @@ class ConvNeXtMAEWithAttention(nn.Module):
             for p in block.parameters():
                 p.requires_grad = True
             unfrozen_blocks.append(block)
-        print("We just unfroze", len(unfrozen_blocks), "blocks out of", len(all_blocks), ". ")
+        print(
+            "We just unfroze",
+            len(unfrozen_blocks),
+            "blocks out of",
+            len(all_blocks),
+            ". ",
+        )
         self.encoder_in_chans = self._infer_encoder_in_chans(default=1)
 
     def count_parameters(self, include=None, exclude=None, trainable_only=False):
@@ -149,7 +152,7 @@ class ConvNeXtMAEWithAttention(nn.Module):
                 continue
             total += p.numel()
         return total
-    
+
     def _iter_encoder_blocks(self):
         if not hasattr(self.encoder, "stages"):
             return []
@@ -242,7 +245,9 @@ def build_classifier_mae(cfg):
     total_params = my_clf.count_parameters(exclude=("reconstruction",))
     encoder_param_ids = {id(p) for p in my_clf.encoder.parameters()}
     non_encoder_params = sum(
-        p.numel() for _, p in my_clf.named_parameters() if id(p) not in encoder_param_ids
+        p.numel()
+        for _, p in my_clf.named_parameters()
+        if id(p) not in encoder_param_ids
     )
     print(f"Total model parameters: {total_params:,}")
     print(f"Non-encoder parameters: {non_encoder_params:,}")
