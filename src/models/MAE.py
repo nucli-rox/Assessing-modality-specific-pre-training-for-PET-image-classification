@@ -6,7 +6,7 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
 from nucli_train.models.image_translation import ImageTranslationModel
-import src.sparse.sparse_transform as sparse_ops
+import src.nets.sparse_transform as sparse_ops
 
 import torch
 import torch.nn as nn

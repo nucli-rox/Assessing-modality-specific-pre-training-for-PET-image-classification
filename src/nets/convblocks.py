@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 
-from .utils import GRN
+from src.conv_blocks.utils import GRN
 from pathlib import Path
 import sys
 

@@ -17,15 +17,21 @@ import sys
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 
-from src.sparse.sparse_transform import (
+from src.nets.sparse_transform import (
     SparseConvNeXtBlock,
     SparseConvNeXtLayerNorm,
     SparseConv2dReweighted,
 )
 import math
-from src.nets.conv_blocks.convblocks import ConvNeXtV2Block2D
+from src.nets.convblocks import ConvNeXtV2Block2D
 
-OPTIMIZERS = {"adam": torch.optim.Adam}
+OPTIMIZERS = {
+    "adam": torch.optim.Adam,
+    "sgd": torch.optim.SGD,
+    "adamw": torch.optim.AdamW,
+    "asgd": torch.optim.ASGD,
+    "adafactor": torch.optim.Adafactor,
+}
 
 CONV_BLOCKS = {
     "convnextv2-block-2d": ConvNeXtV2Block2D,
