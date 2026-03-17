@@ -145,23 +145,21 @@ def build_transform(is_train, cfg):
     return transforms.Compose(ops)
 
 
-def build_imagenet_dataset(is_train, cfg):
-    split = "train" if is_train else "val"
-    root = Path(cfg["data_root"]) / split
+def build_imagenet_dataset(is_train, cfg, indices=None, root=None):
+    if root is None:
+        root = Path(cfg["data_root"]) / ("train" if is_train else "val")
     base_dataset = datasets.ImageFolder(root, transform=build_transform(is_train, cfg))
-
-    subset_size_key = "train_subset_size" if is_train else "val_subset_size"
-    subset_size = cfg.get(subset_size_key)
-    per_class = cfg.get("subset_per_class", True)
-    seed = cfg.get("subset_seed", 42)
-    class_ids = _resolve_class_ids(base_dataset, cfg, seed)
-    indices = _select_subset_indices(
-        base_dataset=base_dataset,
-        subset_size=subset_size,
-        seed=seed,
-        per_class=per_class,
-        class_ids=class_ids,
-    )
+    if indices is None:
+        seed = cfg.get("subset_seed", 42)
+        class_ids = _resolve_class_ids(base_dataset, cfg, seed)
+        subset_size_key = "train_subset_size" if is_train else "val_subset_size"
+        indices = _select_subset_indices(
+            base_dataset=base_dataset,
+            subset_size=cfg.get(subset_size_key),
+            seed=seed,
+            per_class=cfg.get("subset_per_class", True),
+            class_ids=class_ids,
+        )
     return ImageFolderAsDict(Subset(base_dataset, indices))
 
 
@@ -177,28 +175,24 @@ def build_imagenet_data(cfg):
 
     if split_from_train and val_split > 0.0:
         train_root = Path(cfg["data_root"]) / "train"
-        base_train = datasets.ImageFolder(
-            train_root, transform=build_transform(True, cfg)
-        )
+        base_for_idx = datasets.ImageFolder(train_root)
         seed = cfg.get("subset_seed", 42)
-        indices = _select_subset_indices(
-            base_dataset=base_train,
+        all_indices = _select_subset_indices(
+            base_dataset=base_for_idx,
             subset_size=cfg.get("train_subset_size"),
             seed=seed,
             per_class=cfg.get("subset_per_class", True),
-            class_ids=_resolve_class_ids(base_train, cfg, seed),
+            class_ids=_resolve_class_ids(base_for_idx, cfg, seed),
         )
         rng = random.Random(split_seed)
-        rng.shuffle(indices)
-        val_count = max(1, int(len(indices) * val_split))
-        val_idx = indices[:val_count]
-        train_idx = indices[val_count:]
-
-        train_dataset = ImageFolderAsDict(Subset(base_train, train_idx))
-        val_base = datasets.ImageFolder(
-            train_root, transform=build_transform(False, cfg)
+        rng.shuffle(all_indices)
+        val_count = max(1, int(len(all_indices) * val_split))
+        train_dataset = build_imagenet_dataset(
+            True, cfg, indices=all_indices[val_count:], root=train_root
         )
-        val_dataset = ImageFolderAsDict(Subset(val_base, val_idx))
+        val_dataset = build_imagenet_dataset(
+            False, cfg, indices=all_indices[:val_count], root=train_root
+        )
     else:
         train_dataset = build_imagenet_dataset(is_train=True, cfg=cfg)
 
