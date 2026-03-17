@@ -150,7 +150,9 @@ def create_dataframe(
 
     if not save_path.exists():
         nb_mips = data_cfg.get("nb_MIPs")
-        mip_subdir = data_cfg.get("mip_subdir") or (f"{nb_mips}_MIPs" if nb_mips else None)
+        mip_subdir = data_cfg.get("mip_subdir") or (
+            f"{nb_mips}_MIPs" if nb_mips else None
+        )
         files = _find_pet_files(root_dir, mip_subdir=mip_subdir)
         if not files:
             raise ValueError(
@@ -205,7 +207,7 @@ def load_records(csv_path) -> list:
 # ---------------------------------------------------------------------------
 
 
-def instantiate_transform(spec: dict):
+def instantiate_class(spec: dict):
     """Instantiate a transform from a config dict with a `_target_` key."""
     spec = dict(spec)
     target = spec.pop("_target_")
@@ -214,7 +216,7 @@ def instantiate_transform(spec: dict):
 
 
 def build_chain(spec_list: list) -> Compose:
-    return Compose([instantiate_transform(s) for s in spec_list])
+    return Compose([instantiate_class(s) for s in spec_list])
 
 
 def build_transforms(transforms_cfg: dict):
@@ -368,7 +370,7 @@ def build_dataloaders(train_files, val_files, transforms_cfg, dl_cfg):
 
 def build_optimizer_and_scheduler(model, train_cfg: dict, epochs: int):
     """Build criterion, Adam optimizer, and SequentialLR scheduler from config."""
-    criterion = instantiate_transform(train_cfg["criterion"])
+    criterion = instantiate_class(train_cfg["criterion"])
 
     opt_cfg = train_cfg["optimizer"]
     if opt_cfg["type"] != "adam":
