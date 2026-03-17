@@ -24,10 +24,10 @@ The effect is that a border convolution window with only half its support over a
 
 ## Illustration
 
-The image below demonstrates the effect on a white circle (the "active region") against a black background, across three intensity levels (rows: 0.33, 0.66, 1.0) and three convolution implementations (columns):
+The image below demonstrates the effect on a white ring (the "active region") against a black background, across three intensity levels (rows: 0.33, 0.66, 1.0) and three convolution implementations (columns):
 
 | Dense conv | SparK sparse conv | Reweighted sparse conv |
 |:---:|:---:|:---:|
-| Edges distorted in both directions: white pixels bleed inward, black pixels bleed outward due to kernel averaging across the boundary | No bleeding into black pixels, but white-region edges are blurry — active-boundary activations are suppressed by partial kernel coverage | Clean edges at all intensities — boundary activations are rescaled to match fully-active kernel output |
+| Edges distorted in both directions: white pixels bleed inward, black pixels bleed outward due to kernel averaging across the boundary | No bleeding into black pixels, but white-region edges are blurry: active-boundary activations are suppressed by partial kernel coverage | Clean edges at all intensities: boundary activations are rescaled to match fully-active kernel output |
 
 ![Dense vs SparK vs Reweighted sparse convolution on a circular mask at three intensity levels](donuts.png)
