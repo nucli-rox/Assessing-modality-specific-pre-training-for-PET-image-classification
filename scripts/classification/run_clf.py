@@ -1,33 +1,24 @@
 import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path.cwd().parent))  # point to repo root
-import train_clf_WANDB as trainer
 import argparse
-
-from nucli_train.models.builders import build_model, MODEL_REGISTRY
-import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]  # repo root above scripts/
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))
+sys.path.insert(0, str(Path.cwd().parent))
+import train_clf_WANDB as trainer
 
 
-# recreate the parser
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--setup-config", default="../../configs/tasks/setup_MAEclf.yaml"
+        "--setup-config", default="../../configs/classification/setup_clf.yaml"
     )
-    parser.add_argument("--run-name", default=None)
+    parser.add_argument("--run-name", default="run 1")
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--cv-fold", type=int, default=None)
     parser.add_argument("--minimize_data", type=int, default=None)
     parser.add_argument(
         "--experiment_name",
         type=str,
-        default="ConvNeXt benchmark",
+        default="Classification with MAE pre-trained encoder",
     )
     runs = None
     args = parser.parse_args()

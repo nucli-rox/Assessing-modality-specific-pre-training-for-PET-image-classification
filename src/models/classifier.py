@@ -206,6 +206,3 @@ def build_classifier(cfg):
     print(f"Non-encoder parameters: {non_encoder_params:,}")
 
     return model
-
-
-build_MAE_clf = build_classifier
