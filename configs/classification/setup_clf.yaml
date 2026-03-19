@@ -1,5 +1,5 @@
 data:
-  path_to_dataset: "/mnt/c/Users/roxan/OneDrive - Nuclivision/nucli-ssl/mip-data/triage/"
+  path_to_dataset: ""
   nb_MIPs: 4
   scans_excluded: null
   centers_excluded: null
