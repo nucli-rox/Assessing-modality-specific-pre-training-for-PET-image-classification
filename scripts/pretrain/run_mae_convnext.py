@@ -31,12 +31,24 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--run-name",
+        type=str,
+        default="convnextMAE_PPT",
+        help="runname",
+    )
+
+    parser.add_argument(
         "--epochs",
         type=int,
         default=1600,
         help="nb of epochs",
     )
-
+    parser.add_argument(
+        "--experiment-name",
+        type=str,
+        default="MAE ConvNeXt",
+        help="experiment name",
+    )
     parser.add_argument("--save-interval", type=int, default=100)
 
     return parser.parse_args()
@@ -65,8 +77,8 @@ if __name__ == "__main__":
         model,
         train_data=train_data,
         val_loaders=val_loaders,
-        run_name="convnextMAE_PPT",
-        experiment_name="MAE convnext",
+        run_name=args.run_name,
+        experiment_name=args.experiment_name,
         save_interval=args.save_interval,
         model_cfg=model_cfg,
         data_cfg=data_cfg,
