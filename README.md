@@ -108,6 +108,10 @@ Arguments:
 ---
 
 ## Step 1: MAE Pre-training
+All pre-training scripts will log losses and MAE masked / model prediction / ground-truth artifacts to MLflow during training (tracking uri `/experiments/mlflow`). 
+For all pretraining script, MLflow experiment name and run name can be controlled through `--run-name / --experiment-name`. 
+
+Model / optimizer checkpoints will be saved to `experiments/{experiment-name}/{run-name}`.
 
 ### 1.1 PET MAE pre-training
 
