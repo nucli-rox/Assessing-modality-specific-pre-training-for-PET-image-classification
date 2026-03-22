@@ -4,7 +4,7 @@ data:
   scans_excluded: null
   centers_excluded: null
 
-transforms_config: ../configs/tasks/MIP-transforms.yaml
+transforms_config: ../configs/classification/MIP-transforms.yaml
 
 cache_dir: "./cache_resnet_original"
 

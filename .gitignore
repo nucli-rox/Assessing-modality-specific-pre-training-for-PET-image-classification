@@ -1,12 +1,3 @@
-.*
-
-!.yaml
-!.py
-!.md
-!.txt
-!.gitignore
-
-# Python cache
 __pycache__/
 *.pyc
 *.pyo

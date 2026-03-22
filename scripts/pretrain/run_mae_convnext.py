@@ -67,7 +67,7 @@ if __name__ == "__main__":
         val_loaders=val_loaders,
         run_name="convnextMAE_PPT",
         experiment_name="MAE convnext",
-        save_interval=100,
+        save_interval=args.save_interval,
         model_cfg=model_cfg,
         data_cfg=data_cfg,
     )
