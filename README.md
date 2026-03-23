@@ -111,7 +111,7 @@ Arguments:
 All pre-training scripts will log losses and MAE masked / model prediction / ground-truth artifacts to MLflow during training (tracking uri `/experiments/mlflow`). 
 For all pretraining script, MLflow experiment name and run name can be controlled through `--run-name / --experiment-name`. 
 
-Model / optimizer checkpoints will be saved to `experiments/{experiment-name}/{run-name}`.
+Model / optimizer checkpoints will be saved to `experiments/{experiment-name}/{run-name}`. Use `--save-interval` to control how often (in epochs) checkpoints are saved (default: 100).
 
 ### 1.1 PET MAE pre-training
 
